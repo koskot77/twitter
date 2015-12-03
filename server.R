@@ -6,20 +6,17 @@ library(dygraphs)
 library(timeSeries)
 require(tm)
 
-input <- "freq.RData"
+input <- 'rdata.zip'
 
-require("R.utils")
-if( F ){
+#if( F ){
 if( !file.exists(input) || as.double( Sys.time() - file.info(input)$mtime , units="days") > 2 ){
     print("Downloading new data")
-    inputGz <- paste(input,".gz",sep='') 
-    download.file( paste("http://cern.ch/kkotov/",inputGz,sep=''), destfile=inputGz )
-    unlink(input)
-    gunzip(inputGz)
+    download.file( paste("http://cern.ch/kkotov/",input,sep=''), destfile=input )
+    unzip(input)
 }
-}
+#}
 
-load(input)
+load("freq.RData")
 
 places <- c()
 
