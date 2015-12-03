@@ -12,6 +12,7 @@ input <- 'rdata.zip'
 if( !file.exists(input) || as.double( Sys.time() - file.info(input)$mtime , units="days") > 2 ){
     print("Downloading new data")
     download.file( paste("http://cern.ch/kkotov/",input,sep=''), destfile=input )
+    unlink(c("termMatrix*","freq.RData"))
     unzip(input)
 }
 #}
