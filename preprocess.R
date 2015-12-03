@@ -44,7 +44,7 @@ for(place in unique(all$PlaceName)){
 
         dtm <- DocumentTermMatrix(corp, control = list( weighting = function(x) weightTfIdf(x,normalize = FALSE), stopwords = TRUE) )
         # 100 most frequent terms
-        frequentTerms <- findFreqTerms(dtm, quantile(slam::col_sums(dtm), probs = 1 - 100./dim(dtm)[2]))
+        frequentTerms <- if( dim(dtm)[2]>100 ) findFreqTerms(dtm, quantile(slam::col_sums(dtm), probs = 1 - 100./dim(dtm)[2])) else NULL
 
         save( frequentTerms, dtm, corp, file = paste("termMatrix",place,".RData",sep='') )
         rm( frequentTerms, dtm, corp )
