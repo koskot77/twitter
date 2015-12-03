@@ -35,15 +35,13 @@ for(file in list.files(path="./",pattern="*.RData")){
 shinyServer(
   function(input, output) {
 
-#    output$PlaceName <- renderUI({
-#        selectInput("PlaceName", "Select place", choices = places[ seq(length(places),1) ])
-#    })
+    output$place <- renderUI({
+        selectInput("place", "Select place", choices = places)
+    })
 
-#    output$FrequentWord <- renderUI({
-#        if( is.null(input$place) ) frequentTerms <- c()
-#        else load(paste("termMatrix",input$place,".RData",sep=''))
-#        selectInput("FrequentWord",  "Select frequent word", choices = frequentTerms)
-#    })
+    output$place_ <- renderUI({
+        selectInput("place_", "Select place", choices = places)
+    })
 
     output$frequencyHists <- renderDygraph({
         dygraph(freq) %>%
@@ -59,14 +57,14 @@ shinyServer(
     })
 
     output$terms <- renderPrint({
-        if( is.null(input$place) ) return(NULL)
-        else load(paste("termMatrix",input$place,".RData",sep=''))
+        if( is.null(input$place_) ) return(NULL)
+        else load(paste("termMatrix",input$place_,".RData",sep=''))
         frequentTerms
     })
 
     output$text<- renderPrint({
-        if( is.null(input$place) || is.null(input$queryWord) ) return(NULL)
-        else load(paste("termMatrix",input$place,".RData",sep=''))
+        if( is.null(input$place_) || is.null(input$queryWord) ) return(NULL)
+        else load(paste("termMatrix",input$place_,".RData",sep=''))
         # remove all terms that occur only once
         dtmLite <- removeSparseTerms(dtm, 1-1.01/dtm$nrow)
         findAssocs( dtmLite, input$queryWord, input$corr ) 
