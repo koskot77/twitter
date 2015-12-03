@@ -22,10 +22,10 @@ shinyUI(fluidPage(
 )),
 #      uiOutput("PlaceName"),
       textInput("queryWord", "Find association with:", value = "", width = NULL),
-      sliderInput('corr', 'Correlation threshold ',value = 0.1,   min = 0, max = 1, step = 0.001,)
+      sliderInput('corr', 'Association threshold ',value = 0.1,   min = 0, max = 1, step = 0.001,)
     ),
     mainPanel(
-      p('Stacked activity, sampled from all around the world:'),
+      p('Stacked activity, sampled from various places:'),
       dygraphOutput('frequencyHists'),
 #      p("Standard time series decomposition:"),
 #      plotOutput('timeseries'),

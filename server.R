@@ -49,7 +49,7 @@ shinyServer(
         dygraph(freq) %>%
             dyOptions(stackedGraph = TRUE) %>%
             dyAxis("y", label = "number of tweets") %>%
-            dyAxis("x", label = "time (UTC+0?)") %>%
+            dyAxis("x", label = "time (UTC+00)") %>%
             dyRangeSelector(height = 20)
     })
 
