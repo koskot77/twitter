@@ -1,6 +1,4 @@
-library(rCharts) 
 library(dygraphs) 
-require(rjson)
 
 shinyUI(navbarPage("Twitter activity and TF-IDF",
 

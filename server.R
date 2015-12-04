@@ -1,7 +1,3 @@
-library(UsingR)
-library(ggplot2)
-library(rCharts)
-
 library(dygraphs)
 library(timeSeries)
 require(tm)
@@ -9,7 +5,7 @@ require(tm)
 input <- 'rdata.zip'
 
 #if( F ){
-if( !file.exists(input) || as.double( Sys.time() - file.info(input)$mtime , units="days") > 2 ){
+if( !file.exists(input) || !file.exists("freq.RData") || as.double( Sys.time() - file.info(input)$mtime , units="days") > 1 ){
     print("Downloading new data")
     download.file( paste("http://cern.ch/kkotov/",input,sep=''), destfile=input )
     unlink(c("termMatrix*","freq.RData"))
