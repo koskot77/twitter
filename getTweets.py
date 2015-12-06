@@ -7,11 +7,11 @@ from optparse import OptionParser
 
 def credentials():
 
-    access_token_key = "2407435232-QXOkFRVn2dDTlQ1fn0lMoeno8J4dw4qtqSnaECt"
-    access_token_secret = "vP1CJEJMluZGRRJrmeetmDuf7fIRwPDxyWj7FunjMljK4"
+    access_token_key = ""
+    access_token_secret = ""
 
-    consumer_key = "S5Y6XF6fXT6DUULsdd5Cg"
-    consumer_secret = "lG4tQLeHQlxXGjQiPUrGtnV0MYSALN7cEHGWwlyo6LE"
+    consumer_key = ""
+    consumer_secret = ""
 
     oauth_token    = oauth.Token(key=access_token_key,secret=access_token_secret)
     oauth_consumer = oauth.Consumer(key=consumer_key,secret=consumer_secret)
