@@ -12,10 +12,33 @@ save(freq, file = "freq.RData")
 
 for(place in unique(all$PlaceName)){
 
-        print(place)
+    print(place)
 
-        filtered <- subset(all, PlaceName==place)
+    filteredForPlace <- subset(all, PlaceName==place)
 
+    # define global time period
+    periods <- data.frame( start(freq), end(freq) )
+    #  and partition this time period by days from the current moment and going back
+    days <- seq( from = end(freq), to = start(freq), by = -24*60*60 )
+    periods <- rbind( periods,
+                      data.frame( start = days[1:length(days)-1],
+                                  end   = days[2:length(days)  ]
+                                )
+                    )
+    colnames(periods) <- c('start','end')
+    # construct global and daily term matricies
+    for( p in as.integer(rownames(periods)) ){
+
+        if( p == 1 ){
+            print("  Global time period")
+            # do nothing here, dataset is already given for a global time period
+            filtered <- filteredForPlace
+        } else {
+            filtered <- subset(filteredForPlace, timeDate > timeDate(periods[p,2]) & timeDate <= timeDate(periods[p,1]) )
+            print( paste("  Lag",p-1) )
+        }
+
+        # limit the size of input data so as not to run out of RAM
         if( dim(filtered)[1] > 100000 ){
             filtered <- filtered[ sample(dim(filtered)[1], 100000, replace = FALSE), ]
         }
@@ -45,6 +68,11 @@ for(place in unique(all$PlaceName)){
         # 100 most frequent terms
         frequentTerms <- if( dim(dtm)[2]>100 ) findFreqTerms(dtm, quantile(slam::col_sums(dtm), probs = 1 - 100./dim(dtm)[2])) else NULL
 
-        save( frequentTerms, dtm, corp, file = paste("termMatrix",place,".RData",sep='') )
+        if( p == 1 ){ # global period
+            save( frequentTerms, dtm, corp, file = paste("termMatrix",place,".RData",sep='') )
+        } else { # daily
+            save( frequentTerms, dtm, corp, file = paste("termMatrix",place,"Lag",p-1,".RData",sep='') )
+        }
         rm( frequentTerms, dtm, corp )
+    }
 }

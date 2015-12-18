@@ -6,10 +6,10 @@ shinyUI(navbarPage("Twitter activity and TF-IDF",
     dygraphOutput('frequencyHists')
   ),
 
-  tabPanel("TimeSeries",
+  tabPanel("Time Series",
     sidebarLayout(
       sidebarPanel(
-        uiOutput("place"),
+        uiOutput("place_"),
         submitButton("Update View")
       ),
       mainPanel(
@@ -21,7 +21,8 @@ shinyUI(navbarPage("Twitter activity and TF-IDF",
   tabPanel("TF-IDF",
     sidebarLayout(
       sidebarPanel(
-        uiOutput("place_"),
+        uiOutput("place"),
+        uiOutput("lag"),
 #        conditionalPanel(condition="input.conditionedPanels==4",
           textInput("queryWord", "Find association with:", value = "", width = NULL),
           sliderInput('corr', 'Association threshold ',value = 0.1,   min = 0, max = 0.3, step = 0.001),
@@ -30,7 +31,7 @@ shinyUI(navbarPage("Twitter activity and TF-IDF",
       ),
       mainPanel(
         tabsetPanel(
-          tabPanel("TopWords",     verbatimTextOutput("terms"), value=3), 
+          tabPanel("Frequent Words",    verbatimTextOutput("terms"), value=3), 
           tabPanel("Associations", verbatimTextOutput("text"),  value=4),
           id="conditionedPanels"
          )
