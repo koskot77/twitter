@@ -65,14 +65,25 @@ for(place in unique(all$PlaceName)){
         corp <- tm_map(corp, removeWords, stopwords("english"))
 
         dtm <- DocumentTermMatrix(corp, control = list( weighting = function(x) weightTfIdf(x,normalize = FALSE), stopwords = TRUE) )
-        # 100 most frequent terms
-        frequentTerms <- if( dim(dtm)[2]>100 ) findFreqTerms(dtm, quantile(slam::col_sums(dtm), probs = 1 - 100./dim(dtm)[2])) else NULL
+        # remove all terms that occur only once or twice
+        dtmLite <- removeSparseTerms(dtm, 1-2.01/dtm$nrow)
+
+        # 100 most frequent (well, actually IF-IDF relevant) terms and their document frequencies
+        frequentTerms <- NULL
+        if( dim(dtm)[2]>100 ){ # require at least 100 words
+             # frequent terms
+             frequentTerms <- findFreqTerms(dtm, quantile(slam::col_sums(dtm), probs = 1 - 100./dim(dtm)[2]))
+             # and their document frequencies
+             frequentTerms <- sort( slam::col_sums( dtm[,frequentTerms]>0 )/dim(dtm)[1], decreasing = T )
+        }
 
         if( p == 1 ){ # global period
-            save( frequentTerms, dtm, corp, file = paste("termMatrix",place,".RData",sep='') )
+#            save( frequentTerms, dtm, dtmLite, corp, file = paste("termMatrix",place,".RData",sep='') )
+            save( frequentTerms, dtm, dtmLite, file = paste("termMatrix",place,".RData",sep='') )
         } else { # daily
-            save( frequentTerms, dtm, corp, file = paste("termMatrix",place,"Lag",p-1,".RData",sep='') )
+#            save( frequentTerms, dtm, dtmLite, corp, file = paste("termMatrix",place,"Lag",p-1,".RData",sep='') )
+            save( frequentTerms, dtm, dtmLite, file = paste("termMatrix",place,"Lag",p-1,".RData",sep='') )
         }
-        rm( frequentTerms, dtm, corp )
+        rm( frequentTerms, dtm, dtmLite, corp )
     }
 }

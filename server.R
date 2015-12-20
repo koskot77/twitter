@@ -15,8 +15,9 @@ if( !file.exists(input) || !file.exists("freq.RData") || as.double( Sys.time() -
 
 load("freq.RData")
 
-places <- c()
-days   <- data.frame( place=character(), lag=numeric() )
+nPeriods <- round( as.numeric( difftime(end(freq), start(freq), units='day') ) )
+places   <- c()
+days     <- data.frame( place=character(), lag=numeric() )
 
 for(file in list.files(path="./",pattern="*.RData")){
 
@@ -48,8 +49,8 @@ shinyServer(
 
     output$lag <- renderUI({
         # each place have same number of lags
-        choices <- c('Yesterday'='1','Two days ago'='2','Three days ago'='3','Four days ago'='4','Five days ago'='5','Six days ago'='6','Seven days ago'='7')
-        selectInput("lag", "Select time period", choices = c('Whole period'='0', choices[ days[days$place==places[1],"lag"] ]) )
+        choices <- c('One day before'='1','Two days before'='2','Three days before'='3','Four days before'='4','Five days before'='5','Six days before'='6','Seven days before'='7')
+        selectInput("lag", "Select time period", choices = c('Whole period'='0', choices[1:nPeriods]) )
     })
 
 
@@ -69,16 +70,28 @@ shinyServer(
     output$terms <- renderPrint({
         if( is.null(input$place) || is.null(input$lag) ) return(NULL)
         else load(paste("termMatrix", input$place, if( input$lag==0 ) "" else paste("Lag",input$lag,sep=''), ".RData",sep=''))
-        frequentTerms
+        output <- "Terms (with their relative document frequency) from the top TF-IDF list: "
+        output <- append(output, frequentTerms)
+        return(output)
     })
 
     output$text<- renderPrint({
         if( is.null(input$place) || is.null(input$queryWord) ) return(NULL)
         else load(paste("termMatrix",input$place, if( input$lag==0 ) "" else paste("Lag",input$lag,sep=''), ".RData",sep=''))
-        # remove all terms that occur only twice
-        dtmLite <- removeSparseTerms(dtm, 1-2.01/dtm$nrow)
-        findAssocs( dtmLite, input$queryWord, input$corr ) 
+
+        queryWord <- tolower(input$queryWord)
+
+        output <- paste("Term \"",queryWord,"\" is not found in the corpus",sep='')
+
+        if( queryWord %in% colnames(dtm) ){
+            output <- paste("Term \"",queryWord,"\" is found ",slam::col_sums( dtm[,queryWord]>0 )," times in the corpus, associations:")
+            # resort to the lite dtm so as to be quick
+            output <- append(output, findAssocs( dtmLite, queryWord, input$corr ) )
+        }
+
+        return(output)
     })
 
   }
 )
+

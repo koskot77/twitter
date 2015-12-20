@@ -31,8 +31,8 @@ shinyUI(navbarPage("Twitter activity and TF-IDF",
       ),
       mainPanel(
         tabsetPanel(
-          tabPanel("Frequent Words",    verbatimTextOutput("terms"), value=3), 
-          tabPanel("Associations", verbatimTextOutput("text"),  value=4),
+          tabPanel("High Weight Words", verbatimTextOutput("terms"), value=3), 
+          tabPanel("Associations",   verbatimTextOutput("text"),  value=4),
           id="conditionedPanels"
          )
       )
