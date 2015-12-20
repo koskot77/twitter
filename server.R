@@ -81,11 +81,12 @@ shinyServer(
 
         queryWord <- tolower(input$queryWord)
 
-        output <- paste("Term \"",queryWord,"\" is not found in the corpus",sep='')
+        output <- paste("Term '",queryWord,"' is not found in the corpus",sep='')
 
         if( queryWord %in% colnames(dtm) ){
-            output <- paste("Term \"",queryWord,"\" is found ",slam::col_sums( dtm[,queryWord]>0 )," times in the corpus, associations:")
-            # resort to the lite dtm so as to be quick
+            output <- paste("Term '",queryWord,"' is found ",slam::col_sums( dtm[,queryWord]>0 )," times in the corpus, associations:",sep='')
+            # remove all terms that occur only once or twice so at to speed up the findAssocs function
+            dtmLite <- removeSparseTerms(dtm, 1-2.01/dtm$nrow)
             output <- append(output, findAssocs( dtmLite, queryWord, input$corr ) )
         }
 
