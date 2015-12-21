@@ -61,7 +61,7 @@ Document frequency is number of documents (tweets) with the term over total numb
 
 ## Associations
 
-One can type a term and query associations along these lines:
+One can type a term and query associations (TF-IDF weighted co-occurance) along these lines:
 
 <img class=center src=vodka.png height=330>
 <br>
