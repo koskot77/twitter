@@ -1,25 +1,59 @@
 library(dygraphs)
 library(timeSeries)
 require(tm)
+require(parallel)
 
-input <- 'rdata.zip'
+update <- T
 
-if( F ){
-if( !file.exists(input) || !file.exists("freq.RData") || as.double( Sys.time() - file.info(input)$mtime , units="days") > 1 ){
-    print("Downloading new data")
-    download.file( paste("http://cern.ch/kkotov/",input,sep=''), destfile=input )
+processList <- c()
+
+if( update ){
+# Unfortunately, I don't have a shiny server on my own so I cannot update data sets localy as it goes; I have to dowload big chunks of data every time
+if( !file.exists("freq.RData") || as.double( Sys.time() - file.info("freq.RData")$mtime , units="days") > 1 ){
+
+    print("Downloading new freq.RData")
     unlink(c("termMatrix*","freq.RData"))
-    unzip(input)
+    download.file("http://cern.ch/kkotov/twitter/freq.bin", destfile='freq.RData' )
+
+    load("freq.RData")
+
+    # download the global period term matrices sequentially, wait until done
+    for( place in colnames(freq) ){
+        download.file( paste("http://cern.ch/kkotov/twitter/","termMatrix",place,".bin",sep=''), destfile=paste("termMatrix",place,".RData",sep='') )
+    }
+
+    nPeriods <- round( as.numeric( difftime(end(freq), start(freq), units='day') ) )
+
+    fileList <- c()
+
+    # download other term matricies in background
+    for( place in colnames(freq) ){
+        for( day in 1:nPeriods){
+
+            file <- paste("termMatrix",place,"Lag",day,sep='')
+
+            p <- parallel:::mcfork()
+            if( inherits(p, "masterProcess") ){
+                download.file( paste("http://cern.ch/kkotov/twitter/",file,".bin",sep=''), destfile=paste(file,".RData",sep='') )
+                parallel:::mcexit(,paste(file," done (",Sys.getpid(),")",sep=''))
+            }
+            processList <- append(processList,list(p))
+            fileList    <- append(fileList,file)
+
+        }
+    }
+    names(processList) <- fileList
+} else {
+    load("freq.RData")
+    nPeriods <- round( as.numeric( difftime(end(freq), start(freq), units='day') ) )
 }
 }
 
-load("freq.RData")
+lookupPlaces <- function(){
 
-nPeriods <- round( as.numeric( difftime(end(freq), start(freq), units='day') ) )
-places   <- c()
-days     <- data.frame( place=character(), lag=numeric() )
+  places <- c()
 
-for(file in list.files(path="./",pattern="*.RData")){
+  for(file in list.files(path="./",pattern="*.RData")){
 
     if( length(grep("termMatrix",file)) != 0  ){
 
@@ -28,29 +62,54 @@ for(file in list.files(path="./",pattern="*.RData")){
 
         if( length( grep("Lag",file) ) == 0 ){
             places <- append(places,file)
-        } else {
+        }
+    }
+
+  }
+  return(places)
+}
+
+lookupDays <- function(){
+
+  days   <- data.frame( place=character(), lag=numeric() )
+
+  for(file in list.files(path="./",pattern="*.RData")){
+
+    if( length(grep("termMatrix",file)) != 0  ){
+
+        file <- gsub(".RData",    "",file)
+        file <- gsub("termMatrix","",file)
+
+        if( length( grep("Lag",file) ) != 0 ){
             place <- gsub("(.*?)Lag(\\d+)", "\\1", file, perl=TRUE)
             lag   <- gsub("(.*?)Lag(\\d+)", "\\2", file, perl=TRUE)
             days  <- rbind(days, data.frame( place = place, lag = lag ) )
         }
     }
+
+  }
+  return(days)
 }
+
+
 
 shinyServer(
   function(input, output) {
 
     output$place_ <- renderUI({
+        places <- lookupPlaces()
         selectInput("place_", "Select place", choices = places)
     })
 
     output$place <- renderUI({
+        places <- lookupPlaces()
         selectInput("place", "Select place", choices = places)
     })
 
     output$lag <- renderUI({
         # each place have same number of lags
         choices <- c('One day before'='1','Two days before'='2','Three days before'='3','Four days before'='4','Five days before'='5','Six days before'='6','Seven days before'='7')
-        selectInput("lag", "Select time period", choices = c('Whole period'='0', choices[1:nPeriods]) )
+        selectInput("lag", "Select time period", choices = c('Whole period'='0', choices[1:nPeriods] )) # [ days[days$place==places[1],"lag"] ]) )
     })
 
 
@@ -69,15 +128,49 @@ shinyServer(
 
     output$terms <- renderPrint({
         if( is.null(input$place) || is.null(input$lag) ) return(NULL)
-        else load(paste("termMatrix", input$place, if( input$lag==0 ) "" else paste("Lag",input$lag,sep=''), ".RData",sep=''))
+        else {
+            if( input$lag==0 ){
+                load( paste("termMatrix",input$place,".RData",sep='') ) 
+            } else { # chech if downloading is still in progress
+                file <- paste("termMatrix",input$place, if( input$lag==0 ) "" else paste("Lag",input$lag,sep=''),sep='')
+
+                if( file %in% names(processList) ){
+
+                    if( parallel:::selectChildren( processList[[file]] ) == T ){
+                        return( paste("Downloading ",file,"has not yet finished") )
+                    } else {
+                        unserialize( parallel:::readChild( unlist(processList[[file]]) ) )
+                        processList <- processList[ -which( attr(processList,"names") == file ) ]
+                    }
+                }
+                load( paste(file,".RData",sep='') )
+            }
+        }
         output <- "Terms (with their relative document frequency) from the top TF-IDF list: "
         output <- append(output, frequentTerms)
-        return(output)
+        output
     })
 
     output$text<- renderPrint({
-        if( is.null(input$place) || is.null(input$queryWord) ) return(NULL)
-        else load(paste("termMatrix",input$place, if( input$lag==0 ) "" else paste("Lag",input$lag,sep=''), ".RData",sep=''))
+        if( is.null(input$place) || is.null(input$queryWord) || is.null(input$lag) ) return(NULL)
+        else {
+            if( input$lag==0 ){
+                load( paste("termMatrix",input$place,".RData",sep='') ) 
+            } else { # chech if downloading is still in progress
+                file <- paste("termMatrix",input$place, if( input$lag==0 ) "" else paste("Lag",input$lag,sep=''),sep='')
+
+                if( file %in% names(fileList) ){
+
+                    if( parallel:::selectChildren( processList[[file]] ) == T ){
+                        return( paste("Downloading ",file,"has not yet finished") )
+                    } else {
+                        unserialize( parallel:::readChild( unlist(processList[[file]]) ) )
+                        processList <- processList[ -which( attr(processList,"names") == file ) ]
+                    }
+                }
+                load( paste(file,".RData",sep='') )
+            }
+        }
 
         queryWord <- tolower(input$queryWord)
 
@@ -90,9 +183,8 @@ shinyServer(
             output <- append(output, findAssocs( dtmLite, queryWord, input$corr ) )
         }
 
-        return(output)
-    })
+        output
+      })
 
   }
 )
-
