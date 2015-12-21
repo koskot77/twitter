@@ -1,0 +1,70 @@
+---
+title       : "Text Mining on Twitter"
+subtitle    : 
+author      : Khristian Kotov
+job         : 
+framework   : io2012        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+github:
+  user: kkotov 
+  repo: talks
+url:
+  lib:    ../../../monohiggs/plots/libraries
+  assets: ../../../monohiggs/plots/assets
+widgets     : [mathjax]     # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+---
+
+## Introduction
+
+The Twitter platform has gained millions of users from all around the world and it is generating an endless stream of data.
+Although Twitter is also used routinely by PR departments of corporations, universities, and heads of states to propagate
+their agendas to public, the majority of tweets still comes from regular users and can possibly be utilized as a probe of
+a "public mood" on a variety of subjects.
+
+A simple [Shiny application](https://koskot77.shinyapps.io/twitter/) allows one to perform basic text mining operations
+on a sample of relatively new tweets coming from various places. Below I'll give you an insight on how to use this
+application. If you are not familiar with the Text Frequency - Inverse Document Frequency (TF-IDF) method, think of it
+as a reweighting technique that allows one to rank down "low information" words like "the", "and", or "have" and rank up
+infrequent, possibly informative words.
+
+Unfortunately I do not have a shiny server on my own. The application data is updated every time you open the link above,
+which results in a noticeable delay. Please, bear with a half-minute delay.
+
+--- .class #id
+
+
+## Daily activity
+
+The first two tabs show stacked and decomposed daily activity of the Twitter users:
+
+<img class=center src=activity.png height=200>
+<br>
+<img class=center src=ts.png height=200>
+
+--- .class #id
+
+
+## High Weight Words
+
+<img class=center src=topWords.png height=350>
+<br>
+
+List of 100 highest TF-IDF words is displayed on `High Weight Words` sub-tab
+
+Document frequency is number of documents (tweets) with the term over total number of documents
+
+--- .class #id
+
+
+## Associations
+
+One can type a term and query associations along these lines:
+
+<img class=center src=vodka.png height=330>
+<br>
+
+Interestingly, in California `vodka` is also associated to the russian president
+

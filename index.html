@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Text Mining on Twitter</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Text Mining on Twitter">
+  <meta name="author" content="Khristian Kotov">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="../DevDataProducts/libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="../DevDataProducts/libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="../DevDataProducts/libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="../DevDataProducts/libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="../DevDataProducts/libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="../DevDataProducts/libraries/frameworks/io2012/js/slides" 
+    src="../DevDataProducts/libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Text Mining on Twitter</h1>
+    <h2></h2>
+    <p>Khristian Kotov<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Introduction</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The Twitter platform has gained millions of users from all around the world and it is generating an endless stream of data.
+Although Twitter is also used routinely by PR departments of corporations, universities, and heads of states to propagate
+their agendas to public, the majority of tweets still comes from regular users and can possibly be utilized as a probe of
+a &quot;public mood&quot; on a variety of subjects.</p>
+
+<p>A simple <a href="https://koskot77.shinyapps.io/twitter/">Shiny application</a> allows one to perform basic text mining operations
+on a sample of relatively new tweets coming from various places. Below I&#39;ll give you an insight on how to use this
+application. If you are not familiar with the Text Frequency - Inverse Document Frequency (TF-IDF) method, think of it
+as a reweighting technique that allows one to rank down &quot;low information&quot; words like &quot;the&quot;, &quot;and&quot;, or &quot;have&quot; and rank up
+infrequent, possibly informative words.</p>
+
+<p>Unfortunately I do not have a shiny server on my own. The application data is updated every time you open the link above,
+which results in a noticeable delay. Please, bear with a half-minute delay.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Daily activity</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The first two tabs show stacked and decomposed daily activity of the Twitter users:</p>
+
+<p><img class=center src=activity.png height=200>
+<br>
+<img class=center src=ts.png height=200></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>High Weight Words</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img class=center src=topWords.png height=350>
+<br></p>
+
+<p>List of 100 highest TF-IDF words is displayed on <code>High Weight Words</code> sub-tab</p>
+
+<p>Document frequency is number of documents (tweets) with the term over total number of documents</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Associations</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>One can type a term and query associations along these lines:</p>
+
+<p><img class=center src=vodka.png height=330>
+<br></p>
+
+<p>Interestingly, in California <code>vodka</code> is also associated to the russian president</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Introduction'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Daily activity'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='High Weight Words'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Associations'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="../DevDataProducts/libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="../DevDataProducts/monohiggs/plots/libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
