@@ -66,5 +66,19 @@ One can type a term and query associations (TF-IDF weighted co-occurance) along 
 <img class=center src=vodka.png height=330>
 <br>
 
-Interestingly, in California `vodka` is also associated to the russian president
+Although term `vodka` seems to be also associated to the russian president, it follows term
+'nutella', which, in my taste, makes associations at such threshold not very credible 
 
+--- .class #id
+
+## Summary
+
+The sole purpose of this exercise was exercising text mining with TF-IDF method.
+I wanted to group tweets on similar subjects and identify major discussion trends
+(not based on just hash tags).
+Unfortunately, twitter turned out to be not very suitable for my purposes as
+it limits length of document to several hundred symbols. Such a strong limit
+results in a very sparse document term matrix and make tweets distance (well,
+cosine distance) driven by a random coincidence of one term.
+
+<!--By no means I want to perform yet another twitter sentiment analysis.-->
